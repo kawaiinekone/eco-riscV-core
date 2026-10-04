@@ -576,3 +576,38 @@ addi x0, x0, 50 $\to$ Attempt to corrupt x0 with 50 (must remain 0)
 
 <img width="992" height="512" alt="image" src="https://github.com/user-attachments/assets/3cbdf620-760a-481e-a6c7-59c4d86b5e0d" />
 
+
+## Benchmarking & Performance Verification
+## Benchmark & Verification Results
+
+### 1. Functional Execution & Register File Dump
+- **Simulation Tool:** Icarus Verilog (`iverilog`) + `vvp`
+- **Workload:** Standard RV32I ALU, Memory (`lw`/`sw`), and Branch sequence
+
+```text
+[Cycle 45000 ns] REG WRITE -> x1 = 16 (0x00000010)
+[Cycle 55000 ns] REG WRITE -> x2 = 255 (0x000000ff)
+[Cycle 65000 ns] MEM STORE -> RAM[16] = 255 (0x000000ff)
+[Cycle 75000 ns] REG WRITE -> x3 = 255 (0x000000ff)
+[Cycle 85000 ns] REG WRITE -> x4 = 256 (0x00000100)
+[Cycle 95000 ns] REG WRITE -> x5 = 1 (0x00000001)
+
+==================================================
+          FINAL REGISTER FILE DUMP                
+==================================================
+  x01 = 16 (0x00000010)
+  x02 = 255 (0x000000ff)
+  x03 = 255 (0x000000ff)
+  x04 = 256 (0x00000100)
+  x05 = 1 (0x00000001)
+==================================================
+```
+
+----------------
+
+### 2. Eco-Gate Switching Activity & Power Analysis
+**Analysis Tool:**  power_metric.py (VCD switching transition parser)
+
+**Status:** Verified
+<img width="1152" height="977" alt="image" src="https://github.com/user-attachments/assets/19d577a5-b07e-4692-b02e-0f6d00077719" />
+

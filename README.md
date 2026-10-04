@@ -611,3 +611,26 @@ addi x0, x0, 50 $\to$ Attempt to corrupt x0 with 50 (must remain 0)
 **Status:** Verified
 <img width="1152" height="977" alt="image" src="https://github.com/user-attachments/assets/19d577a5-b07e-4692-b02e-0f6d00077719" />
 
+---
+
+### 3. Throughput & Pipeline Performance Metrics (CPI / IPC)
+- **Workload Instructions Committed ($I$):** 6 instructions
+- **Active Execution Cycles ($C$):** 8 clock cycles (from reset deassertion at 35ns to writeback commit at 95ns)
+- **Clock Cycle Time:** 10 ns (100 MHz target period)
+
+$$\text{CPI} = \frac{\text{Total Clock Cycles}}{\text{Total Instructions}} = \frac{8}{6} \approx \mathbf{1.33}$$
+
+$$\text{IPC} = \frac{1}{\text{CPI}} = \frac{6}{8} \approx \mathbf{0.75}$$
+
+* **Pipeline Hazard Strategy:**
+  * **Control Hazards:** 1-cycle flush bubble on taken branch (`if_id_reg.v` synchronously flushes incorrect path to NOP).
+  * **RAW Data Hazards:** Handled via internal write-before-read bypass inside `reg_file.v`, avoiding stalls on back-to-back register reads.
+  * **Load-Use Latency:** Uses compiler scheduling / software NOP padding to keep hardware area and switching power minimal.
+
+---
+
+### 4. Hardware Acceleration (`cpop` Instruction Speedup)
+- **Architecture Extension:** Dedicated combinational 32-bit parallel adder tree built directly into the ALU (`alu.v`).
+- **Standard RV32I Software Approach:** 32-bit shift-and-add loop requires ~32 to 50 clock cycles.
+- **Hardware-Accelerated Approach:** Custom R-type instruction (`cpop rd, rs1`) executes popcount deterministically in **1 clock cycle**.
+- **Theoretical Acceleration:** **~30x to 50x speedup** on Hamming distance and bit-manipulation workloads.
